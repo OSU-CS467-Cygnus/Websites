@@ -1,5 +1,5 @@
 var category_id = document.getElementById('idInput').value;
-console.log("Page for category with id " + category_id);
+//console.log("Page for category with id " + category_id);
 
 
 /*Set the togglers*/

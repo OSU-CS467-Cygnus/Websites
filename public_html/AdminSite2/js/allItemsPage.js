@@ -18,7 +18,6 @@ $.ajax({
     dataType: 'json',
     success: function(data) {
         for (var i = 0; i < data.length; i++) {
-          console.log('nard');
             var name = data[i].name;
             var id = data[i].id + '';
             if(!data[i].category_id){
@@ -38,7 +37,7 @@ $.ajax({
 function fillTable(name, category_id, id){
   /*Build the url to the category page with the id and link to it
   Currently links to google*/
-  var categoryPageUrl = "https://www.google.com/#q=" + category_id;
+  //var categoryPageUrl = "https://www.google.com/#q=" + category_id;
   /*Add list item to list in allBusinessesPage.php*/
    $("#thisList").append("\
       <li class='white-square' id='" + id + "'> \

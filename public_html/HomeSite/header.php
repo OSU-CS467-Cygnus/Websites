@@ -17,11 +17,11 @@
     				</span>
 				</div>
 				<ul class="nav nav-pills pull-right">
-					<li role="presentation" class="dropdown header-button"><a href="category.php?name=Repair%20Items" class="dropbtn header-link">Repair <span class="caret"></span></a>
+					<li role="presentation" class="dropdown header-button"><a href="category.php?type=repair" class="dropbtn header-link">Repair <span class="caret"></span></a>
 						<div class="dropdown-content" id="header-repair-links">
 						</div>
 					</li>
-					<li role="presentation" class="dropdown header-button"><a href="category.php" class="dropbtn header-link">Reuse <span class="caret"></span></a>
+					<li role="presentation" class="dropdown header-button"><a href="category.php?type=reuse" class="dropbtn header-link">Reuse <span class="caret"></span></a>
 						<div class="dropdown-content" id="header-reuse-links">
 						</div>
 					</li>

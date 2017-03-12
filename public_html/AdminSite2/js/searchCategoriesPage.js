@@ -4,8 +4,6 @@
  * Similar to the allCategoriesPage, but will return only entries with the term
  */
 
-//console.log(search_term);
-
 /*Set the togglers*/
 $(function() {
     return $('[data-toggle]').on('click', function() {
@@ -26,7 +24,6 @@ $.ajax({
             alert("No Categories found with given search.  Please try again!")
         //console.log(data);
         for (var i = 0; i < data.length; i++) {
-            //console.log('nard');
             var name = data[i].name;
             var id = data[i].id + '';
             fillTable(name, id);
@@ -40,7 +37,7 @@ function fillTable(name, category_id, id){
      Currently links to google*/
     // var categoryPageUrl = "https://www.google.com/#q=" + category_id;
     // var categoryPageUrl = "RUapi/AdminSite2/singleCategoryPage.php/#q=" + category_id;
-    var x = category_id + '';
+    //var x = category_id + '';
     //console.log(category_id);
     /*Add list item to list in allBusinessesPage.php*/
     $("#thisList").append("\

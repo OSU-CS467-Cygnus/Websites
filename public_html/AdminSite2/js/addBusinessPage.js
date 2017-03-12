@@ -130,7 +130,7 @@ setAddButtonListener = function(){
 makeaddFunction = function(addButton){
 
     thisaddFunction = function(){
-        var newName = $('#name_input').val();
+        //var newName = $('#name_input').val();
 
         payload = {};
         payload.name = $('#name_input').val();

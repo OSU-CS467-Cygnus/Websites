@@ -51,7 +51,7 @@ $.ajax({
             else{
               website = data[i].website + '';
             }
-            var zip = data[i].zip + '';
+            //var zip = data[i].zip + '';
 
             /*city*/
             if(!(data[i].city)){
@@ -94,7 +94,7 @@ $.ajax({
 
 /*add a list item to the unoredered list #thisList*/
 function fillTable(name, address_line_1, address_line_2, city, zip_code, website, phone, id){
-  var shortenedURL = website.replace(/^(https?|ftp):\/\//, '');
+  //var shortenedURL = website.replace(/^(https?|ftp):\/\//, '');
   /*Add list item to list in allBusinessesPage.php*/
    $("#thisList").append("\
       <li class='white-square' id='" + id + "'> \

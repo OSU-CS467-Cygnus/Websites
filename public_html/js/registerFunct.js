@@ -64,6 +64,7 @@ function newUser(){
         }
      }
 
+
      /* response was false, can't add to DB */
     if(req.responseText == 0){
       document.getElementById("output2").innerHTML = "Error: Username taken.";

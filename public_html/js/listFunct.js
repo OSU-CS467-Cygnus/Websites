@@ -510,7 +510,7 @@ function addBusinessServices(busName) {
 
 //adds the list of items a given business accepts to "services-container"
 function addBusinessLinks(busName) {
-	var oldBusName = busName;
+	//var oldBusName = busName;
 	busName = slashToUnderscore(busName);
 	
 	var req = new XMLHttpRequest();

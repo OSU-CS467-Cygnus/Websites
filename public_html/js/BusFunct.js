@@ -75,8 +75,8 @@ function addNewBusiness(){
   var type = "add";
   x = name;
   var flag = 0;
-  console.log(x);
-  console.log(name);
+  //console.log(x);
+  //console.log(name);
 
 
   /* check for blanks in the form */
@@ -184,17 +184,17 @@ Purpose: Add new Business info for many to many items
 function updateItem(value){
   $('#output2').empty();
   var name = x;
-  console.log(name);
+  //console.log(name);
   //var item = document.getElementById("update1").value;
   var item = value;
-  console.log(item);
+  //console.log(item);
   var tableData = "name="+name+"&items="+item;
 
     $.ajax({type:"POST",
       url: webURL + "/RUapi/updateBusiness",
       data: tableData,
       success: function(data){
-        console.log(data);
+        //console.log(data);
       },
     });
   }

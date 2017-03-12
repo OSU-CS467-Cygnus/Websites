@@ -446,4 +446,29 @@
 
 	});
 
+	/***
+	* @api {get} /category/:id
+	* @apiName ReUseApp
+	* @apiGroup RUapi
+	*
+	* @apiParam {Integer} id category unique ID.
+	*
+	* @apiSuccess {String} The name of the category corresponding to that ID
+	*/
+	$app->get('/category/:id', function($id){
+	$mysqli = connectReuseDB();
+
+	$id = (int)$mysqli->real_escape_string($id);
+	$result = $mysqli->query('SELECT name, id FROM Reuse_Categories WHERE Reuse_Categories.id = '.$id.'');
+	$returnArray = array();
+	while($row = $result->fetch_object()){
+		$returnArray[] = $row;
+	}
+
+	echo json_encode($returnArray);
+
+	$result->close();
+	$mysqli->close();
+	});
+
 	?>

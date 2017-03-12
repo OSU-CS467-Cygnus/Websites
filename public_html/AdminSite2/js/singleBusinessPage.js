@@ -1,5 +1,5 @@
 var id = document.getElementById('idInput').value;
-console.log("Page for business with id " + id);
+//console.log("Page for business with id " + id);
 
 
 /*Get the list of businesses*/
@@ -57,7 +57,7 @@ $.ajax({
             else{
                 website = data[i].website + '';
             }
-            var zip = data[i].zip + '';
+            //var zip = data[i].zip + '';
 
             /*city*/
             if(!(data[i].city)){
@@ -100,7 +100,7 @@ $.ajax({
 
 /**/
 function fillTable(name, address_line_1, address_line_2, city, zip_code, website, phone, id, latitude, longitude){
-    var shortenedURL = website.replace(/^(https?|ftp):\/\//, '');
+    //var shortenedURL = website.replace(/^(https?|ftp):\/\//, '');
     /*Add list item to list in allBusinessesPage.php*/
     $("#thisList").append("\
       <li class='white-square' id='" + id + "'> \
@@ -167,7 +167,7 @@ setUpdateButtonListener = function(){
 makeUpdateFunction = function(updateButton){
 
     thisUpdateFunction = function(){
-        var oldName = $('#name_input').val();
+        //var oldName = $('#name_input').val();
 
         payload = {};
         payload.name = $('#name_input').val();

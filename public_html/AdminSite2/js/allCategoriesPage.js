@@ -18,7 +18,6 @@ $.ajax({
     dataType: 'json',
     success: function(data) {
         for (var i = 0; i < data.length; i++) {
-          console.log('nard');
             var name = data[i].name;
             var id = data[i].id + '';
             fillTable(name, id);
@@ -32,7 +31,7 @@ function fillTable(name, category_id, id){
   Currently links to google*/
   // var categoryPageUrl = "https://www.google.com/#q=" + category_id;
   // var categoryPageUrl = "RUapi/AdminSite2/singleCategoryPage.php/#q=" + category_id;
-var x = category_id + '';
+//var x = category_id + '';
 console.log(category_id);
   /*Add list item to list in allBusinessesPage.php*/
    $("#thisList").append("\
