@@ -21,16 +21,40 @@
 	}
 
 	/**
+  	 * @api {get} /business/repairExclusive
+     * @apiName ReUseApp
+     *
+	 * @apiSuccess {JSON[]} returnArray Distinct businesses that take repair items
+	 */
+	$app->get('/business/repairExclusive', function(){
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id WHERE loc.recycle <> 1 AND loc_item.Type = 1");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+        
+        
+	/**
   	 * @api {get} /business/reuseExclusive
      * @apiName ReUseApp
      *
-	 * @apiSuccess {JSON[]} returnArray Distinct businesses not in Repair, Repair Items, or Recycle and not having the recycle flag set to 1.
+	 * @apiSuccess {JSON[]} returnArray Distinct businesses not in Repair, Repair Items, or Recycle and not having the recycle flag set to 1 and having the location type set to 0 for reuse.
 	 */
 	$app->get('/business/reuseExclusive', function(){
 
 		$mysqli = connectReuseDB();
 
-		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id WHERE cat.name NOT IN ('Repair', 'Repair Items', 'Recycle') AND loc.recycle <> 1");
+		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id WHERE cat.name NOT IN ('Repair', 'Repair Items', 'Recycle') AND loc.recycle <> 1 AND loc_item.Type = 0");
 
 		$returnArray = array();
 	    while($row = $result->fetch_object()){
@@ -122,6 +146,86 @@
 
 
 	/**
+  	 * @api {get} /reuse/business/category/name/:cat_name
+     * @apiName ReUseApp
+     *
+	 * @apiParam {String} cat_name Category name (mandatory).
+	 * @apiSuccess {JSON[]} returnArray Distinct reuse businesses associated with a given category, ordered by business names.
+	 */
+	$app->get('/reuse/business/category/name/:cat_name', function($cat_name){
+		singleToDoubleQuotes($cat_name);
+		underscoreToSlash($cat_name);
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id WHERE cat.name = '$cat_name' AND loc_item.Type = 0 ORDER BY loc.name");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+        
+        /**
+  	 * @api {get} /repair/business/category/name/:cat_name
+     * @apiName ReUseApp
+     *
+	 * @apiParam {String} cat_name Category name (mandatory).
+	 * @apiSuccess {JSON[]} returnArray Distinct repair businesses associated with a given category, ordered by business names.
+	 */
+	$app->get('/repair/business/category/name/:cat_name', function($cat_name){
+		singleToDoubleQuotes($cat_name);
+		underscoreToSlash($cat_name);
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id WHERE cat.name = '$cat_name' AND loc_item.Type = 1 ORDER BY loc.name");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+        
+
+	/**
+  	 * @api {get} /repair/business/category/name/not/:cat_name
+     * @apiName ReUseApp
+     *
+	 * @apiParam {String} cat_name Category name (mandatory).
+	 * @apiSuccess {JSON[]} returnArray Distinct repair businesses not associated with a given category, ordered by business names.
+	 */
+	$app->get('/repair/business/category/name/not/:cat_name', function($cat_name){
+		singleToDoubleQuotes($cat_name);
+		underscoreToSlash($cat_name);
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id WHERE cat.name <> '$cat_name'  AND loc_item.Type = 1 ORDER BY loc.name");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+
+
+	/**
   	 * @api {get} /business/category/name/not/:cat_name
      * @apiName ReUseApp
      *
@@ -173,6 +277,59 @@
 	});
 
 	/**
+  	 * @api {get} /reuse/business/item/name/:item_name
+     * @apiName ReUseApp
+     *
+	 * @apiParam {String} item_name Item name (mandatory).
+	 * @apiSuccess {JSON[]} returnArray Distinct reuse businesses accepting a given item.
+	 */
+	$app->get('/reuse/business/item/name/:item_name', function($item_name){
+		singleToDoubleQuotes($item_name);
+		underscoreToSlash($item_name);
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id WHERE item.name = '$item_name' AND loc_item.Type = 0");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+        
+        /**
+  	 * @api {get} /repair/business/item/name/:item_name
+     * @apiName ReUseApp
+     *
+	 * @apiParam {String} item_name Item name (mandatory).
+	 * @apiSuccess {JSON[]} returnArray Distinct repair businesses accepting a given item.
+	 */
+	$app->get('/repair/business/item/name/:item_name', function($item_name){
+		singleToDoubleQuotes($item_name);
+		underscoreToSlash($item_name);
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id WHERE item.name = '$item_name' AND loc_item.Type = 1");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+        
+
+	/**
   	 * @api {get} /business/item/name/:item_name
      * @apiName ReUseApp
      *
@@ -191,6 +348,69 @@
 		$mysqli = connectReuseDB();
 
 		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id WHERE cat.name = '$cat_name' AND item.name = '$item_name'");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+
+
+        /**
+  	 * @api {get} /reuse/business/item/name/:item_name
+     * @apiName ReUseApp
+     *
+	 * @apiParam {String} item_name Item name (mandatory).
+	 * @apiParam {String} cat_name Category name (mandatory).
+	 * @apiSuccess {JSON[]} returnArray Distinct reuse businesses associated with a given category and and item in the category.
+	 */
+	$app->get('/reuse/business/category/name/:cat_name/item/name/:item_name', function($cat_name, $item_name){
+
+		singleToDoubleQuotes($cat_name);
+		singleToDoubleQuotes($item_name);
+		underscoreToSlash($item_name);
+		underscoreToSlash($cat_name);
+		//echo $cat_name."	".$item_name;
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id WHERE cat.name = '$cat_name' AND item.name = '$item_name' AND loc_item.Type = 0");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+        
+	/**
+  	 * @api {get} /repair/business/item/name/:item_name
+     * @apiName ReUseApp
+     *
+	 * @apiParam {String} item_name Item name (mandatory).
+	 * @apiParam {String} cat_name Category name (mandatory).
+	 * @apiSuccess {JSON[]} returnArray Distinct repair businesses associated with a given category and and item in the category.
+	 */
+	$app->get('/repair/business/category/name/:cat_name/item/name/:item_name', function($cat_name, $item_name){
+
+		singleToDoubleQuotes($cat_name);
+		singleToDoubleQuotes($item_name);
+		underscoreToSlash($item_name);
+		underscoreToSlash($cat_name);
+		//echo $cat_name."	".$item_name;
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT loc.name, loc.id, loc.address_line_1, loc.address_line_2, state.abbreviation, loc.phone, loc.website, loc.city, loc.zip_code, loc.latitude, loc.longitude FROM Reuse_Locations AS loc LEFT JOIN States AS state ON state.id = loc.state_id INNER JOIN Reuse_Locations_Items AS loc_item ON loc.id = loc_item.location_id INNER JOIN Reuse_Items AS item ON loc_item.item_id = item.id INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id WHERE cat.name = '$cat_name' AND item.name = '$item_name' AND loc_item.Type = 1");
 
 		$returnArray = array();
 	    while($row = $result->fetch_object()){
@@ -286,6 +506,87 @@
 	});
 
 	/**
+  	 * @api {get} /reuse/item/category/name/:cat_name
+     * @apiName ReUseApp
+     *
+	 * @apiParam {String} cat_name Category name (mandatory).
+	 * @apiSuccess {JSON[]} returnArray Distinct reuse items in the given category as well as the number of businesses accepting an item, ordered by item name.
+	 */
+	$app->get('/reuse/item/category/name/:cat_name', function($cat_name){
+
+		singleToDoubleQuotes($cat_name);
+		underscoreToSlash($cat_name);
+
+
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT item.name, COUNT(loc_item.location_id) AS item_count FROM Reuse_Items AS item INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id INNER JOIN Reuse_Locations_Items AS loc_item ON item.id = loc_item.item_id WHERE cat.name = '$cat_name' AND loc_item.Type = 0 GROUP BY (item.name) ORDER BY item.name");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+
+	/**
+  	 * @api {get} /repair/item/category/name/:cat_name
+     * @apiName ReUseApp
+     *
+	 * @apiParam {String} cat_name Category name (mandatory).
+	 * @apiSuccess {JSON[]} returnArray Distinct repair items in the given category as well as the number of businesses accepting an item, ordered by item name.
+	 */
+	$app->get('/repair/item/category/name/:cat_name', function($cat_name){
+
+		singleToDoubleQuotes($cat_name);
+		underscoreToSlash($cat_name);
+
+
+
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT item.name, COUNT(loc_item.location_id) AS item_count FROM Reuse_Items AS item INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id INNER JOIN Reuse_Locations_Items AS loc_item ON item.id = loc_item.item_id WHERE cat.name = '$cat_name' AND loc_item.Type = 1 GROUP BY (item.name) ORDER BY item.name");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+
+        /**
+  	 * @api {get} /item/category/reuseExclusive
+     * @apiName ReUseApp
+     *
+	 * @apiSuccess {JSON[]} returnArray Distinct items in any category with repair businesses
+	 */
+	$app->get('/item/category/repairExclusive', function(){
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query("SELECT DISTINCT item.name, COUNT(loc_item.location_id) AS item_count FROM Reuse_Items AS item INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id INNER JOIN Reuse_Locations_Items AS loc_item ON item.id = loc_item.item_id WHERE loc_item.Type = 1 GROUP BY (item.name) ORDER BY item.name");
+
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+        
+        
+	/**
   	 * @api {get} /item/category/reuseExclusive
      * @apiName ReUseApp
      *
@@ -294,7 +595,7 @@
 	$app->get('/item/category/reuseExclusive', function(){
 		$mysqli = connectReuseDB();
 
-		$result = $mysqli->query("SELECT DISTINCT item.name, COUNT(loc_item.location_id) AS item_count FROM Reuse_Items AS item INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id INNER JOIN Reuse_Locations_Items AS loc_item ON item.id = loc_item.item_id WHERE cat.name NOT IN ('Repair', 'Repair Items', 'Recycle') GROUP BY (item.name) ORDER BY item.name");
+		$result = $mysqli->query("SELECT DISTINCT item.name, COUNT(loc_item.location_id) AS item_count FROM Reuse_Items AS item INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id INNER JOIN Reuse_Locations_Items AS loc_item ON item.id = loc_item.item_id WHERE cat.name NOT IN ('Repair', 'Repair Items', 'Recycle') AND loc_item.Type = 0 GROUP BY (item.name) ORDER BY item.name");
 
 		$returnArray = array();
 	    while($row = $result->fetch_object()){
@@ -317,8 +618,15 @@
 	$app->get('/category/reuseExclusive', function(){
 		$mysqli = connectReuseDB();
 
-		$result = $mysqli->query("SELECT DISTINCT cat.name FROM Reuse_Categories AS cat WHERE cat.name NOT IN ('Repair', 'Repair Items', 'Recycle') ORDER BY cat.name");
+		//$result = $mysqli->query("SELECT DISTINCT cat.name FROM Reuse_Categories AS cat WHERE cat.name NOT IN ('Repair', 'Repair Items', 'Recycle') ORDER BY cat.name");
 
+                $result = $mysqli->query('SELECT DISTINCT c.name
+                                            FROM Reuse_Locations_Items l
+                                            JOIN Reuse_Items i ON l.item_id = i.id
+                                            JOIN Reuse_Categories c ON i.category_id = c.id
+                                            WHERE l.Type = 0
+                                            ORDER BY c.name ASC');
+                
 		$returnArray = array();
 	    while($row = $result->fetch_object()){
 	      $returnArray[] = $row;
@@ -330,6 +638,33 @@
 	    $mysqli->close();
 	});
 
+	/**
+  	 * @api {get} /category/repairExclusive
+     * @apiName ReUseApp
+     *
+	 * @apiSuccess {JSON[]} returnArray All distinct category names for repair, ordered by ordered by category name.
+	 */
+	$app->get('/category/repairExclusive', function(){
+		$mysqli = connectReuseDB();
+
+		$result = $mysqli->query('SELECT DISTINCT c.name
+                                            FROM Reuse_Locations_Items l
+                                            JOIN Reuse_Items i ON l.item_id = i.id
+                                            JOIN Reuse_Categories c ON i.category_id = c.id
+                                            WHERE l.Type = 1
+                                            ORDER BY c.name ASC');
+                
+		$returnArray = array();
+	    while($row = $result->fetch_object()){
+	      $returnArray[] = $row;
+	    }
+
+	    echo json_encode($returnArray);
+
+	    $result->close();
+	    $mysqli->close();
+	});
+        
 	/**
   	 * @api {get} /document/business/name/:bus_name
      * @apiName ReUseApp
@@ -410,7 +745,7 @@
 	$app->get('/categorySearch/:term', function($term){
 		$mysqli = connectReuseDB();
 
-		$result = $mysqli->query("SELECT name, id FROM Reuse_Categories WHERE Reuse_Categories.name LIKE '%$term%'");
+		$result = $mysqli->query("SELECT DISTINCT cat.name, cat.id, loc_item.Type FROM Reuse_Items AS item INNER JOIN Reuse_Categories AS cat ON item.category_id = cat.id INNER JOIN Reuse_Locations_Items AS loc_item ON item.id = loc_item.item_id WHERE cat.name LIKE '%$term%'");
 
 		$returnArray = array();
 		while($row = $result->fetch_object()){
@@ -432,7 +767,7 @@
 	$app->get('/itemSearch/:term', function($term){
 		$mysqli = connectReuseDB();
 
-		$result = $mysqli->query("SELECT name, id, category_id FROM Reuse_Items WHERE Reuse_Items.name LIKE '%$term%'");
+		$result = $mysqli->query("SELECT DISTINCT i.name, i.id, i.category_id, loc_item.Type FROM Reuse_Items i INNER JOIN Reuse_Locations_Items AS loc_item ON i.id = loc_item.item_id WHERE i.name LIKE '%$term%'");
 
 		$returnArray = array();
 		while($row = $result->fetch_object()){

@@ -46,12 +46,13 @@
 
 			function initCategoryMapWrapper() {
 				var catName = encodeURI("<?php if(isset($_REQUEST['name'])) {echo $_REQUEST['name'];}?>");
+                                var type = encodeURI("<?php if(isset($_REQUEST['type'])) {echo $_REQUEST['type'];}?>");
 				
-				if(catName == "") {
+				if(catName == "" && type == "") {
 					initCategoryMap();
 				}
 				else {
-					initCategoryMap(catName);
+					initCategoryMap(catName, type);
 				}
 			}
 			
@@ -63,8 +64,9 @@
 		<script src="../js/listFunct.js" type="text/javascript"></script>
 		<script>
 			var catName = encodeURI("<?php if(isset($_REQUEST['name'])) {echo $_REQUEST['name'];}?>");
+                        var type = encodeURI("<?php if(isset($_REQUEST['type'])) {echo $_REQUEST['type'];}?>");
 			
-			addItemList(catName);
+			addItemList(catName, type);
 		</script>
     </body>
 </html>

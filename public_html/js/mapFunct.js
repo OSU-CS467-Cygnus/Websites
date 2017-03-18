@@ -162,13 +162,14 @@ function initGeneralMap() {
 	reqRecycle.open("GET", APIBase + "/business/recycleExclusive", true);
 	reqRecycle.send();
 	
-	reqRepair.open("GET", APIBase + "/business/category/name/Repair%20Items", true);
+	//reqRepair.open("GET", APIBase + "/business/category/name/Repair%20Items", true);
+        reqRepair.open("GET", APIBase + "/business/repairExclusive", true);
 	reqRepair.send();
 
 }
 
 //initializes a map with businesses from a given category, or all categories except Repair Items and Recycle if no category name is given
-function initCategoryMap(categoryName) {
+function initCategoryMap(categoryName, type) {
 	
 	categoryName = slashToUnderscore(categoryName);
 		
@@ -203,19 +204,28 @@ function initCategoryMap(categoryName) {
 	};
 	
 	
-	if(categoryName === undefined) {
+	if(type === "reuse" && categoryName === undefined || type === "reuse" && categoryName === "") {
 		var catURI = APIBase + "/business/reuseExclusive"; 
 	}
-	else {
-		var catURI = APIBase + "/business/category/name/" + categoryName; 
+        else if(type === "repair" && categoryName === undefined || type === "repair" && categoryName === "") {
+		var catURI = APIBase + "/business/repairExclusive"; 
 	}
+	else if (type === "reuse") {
+		var catURI = APIBase + "/reuse/business/category/name/" + categoryName; 
+	}
+        else if (type === "repair") {
+		var catURI = APIBase + "/repair/business/category/name/" + categoryName; 
+	}
+        else{
+            initGeneralMap();
+        }
 	
 	req.open("GET", catURI, true);
 	req.send();
 }
 
 //initializes a map with businesses associated with a given category and item
-function initItemMap(categoryName, itemName) {
+function initItemMap(categoryName, itemName, type) {
 		
 	categoryName = slashToUnderscore(categoryName);
 	itemName = slashToUnderscore(itemName);
@@ -250,22 +260,42 @@ function initItemMap(categoryName, itemName) {
 		
 	};
 
-	if(categoryName === undefined || itemName === undefined || categoryName === "" || itemName === "") {//selecting all businesses in the Reuse category if none is specified
+        //selecting all businesses in the Reuse category if none is specified
+	if(type === "reuse" && categoryName === undefined && itemName === undefined || type === "reuse" && categoryName === "" && itemName === "") {
 		var itemURI = APIBase + "/business/reuseExclusive";
 	}
-	else if (itemName === undefined || itemName === "") {//if a category is given but not an item, list all businesses associated with a category
-		var itemURI = APIBase + "/business/category/name/" + categoryName;
+        //selecting all business in repair category
+        else if(type === "repair" && categoryName === undefined && itemName === undefined || type === "repair" && categoryName === "" && itemName === "") {
+		var itemURI = APIBase + "/business/repairExclusive";
 	}
-	else if (categoryName === undefined || categoryName === "") {//if an item is given but not a category, list all businesses associated with an item
-		var itemURI = APIBase + "/business/item/name/" + itemName;
+        //if a category is given but not an item, list all businesses associated with a category for reuse or repair
+	else if (type == "reuse" && itemName === undefined || type == "reuse" && itemName === "") {
+		var itemURI = APIBase + "/reuse/business/category/name/" + categoryName;
+	}
+        else if (type == "repair" && itemName === undefined || type == "repair" && itemName === "") {
+		var itemURI = APIBase + "/repair/business/category/name/" + categoryName;
+	}
+        //if an item is given but not a category, list all businesses associated with an item for reuse or repair
+	else if (type == "reuse" && categoryName === undefined || type == "reuse" && categoryName === "") {
+		var itemURI = APIBase + "/reuse/business/item/name/" + itemName;
+	}
+        else if (type == "repair" && categoryName === undefined || type == "repair" && categoryName === "") {
+		var itemURI = APIBase + "/repair/business/item/name/" + itemName;
 	}
 	else if (categoryName === "Recycle" && itemName === "Recycle") {//if the special Recyce case is used 
 		var itemURI = APIBase + "/business/recycleExclusive";
 	}
-	else {//if both category and item names are given, list all businesses associated with both
-		
-		var itemURI = APIBase + "/business/category/name/" + categoryName + "/item/name/" + itemName;
+        //if both category and item names are given, list all businesses associated with both for reuse or repair
+	else if (type == "reuse" ){
+		var itemURI = APIBase + "/reuse/business/category/name/" + categoryName + "/item/name/" + itemName;
 	}
+        else if (type == "repair" ){
+		var itemURI = APIBase + "/repair/business/category/name/" + categoryName + "/item/name/" + itemName;
+	}
+        // otherwise draw general map
+        else{
+            initGeneralMap();
+        }
 	
 	req.open("GET", itemURI, true);
 	req.send();

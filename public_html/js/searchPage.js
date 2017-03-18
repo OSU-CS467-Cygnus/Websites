@@ -57,30 +57,46 @@ function getItems(search_term) {
         dataType: 'json',
         success: function (items) {
             // Loop through the items to get the category name
+            //console.log(items);
             for (i = 0; i < items.length; i++) {
                 var item_name = items[i].name;
                 //console.log("Item #" + i + ": " + item_name);
                 var category_ID = items[i].category_id;
+                var item_type = items[i].Type;
+                //console.log("My type: " + item_type);
                 //console.log(category_ID);
                 //Now let's get the category name to
-                getCat(item_name, category_ID);
-                function getCat(item_name, category_ID) {
+                getCat(item_name, category_ID, item_type);
+                function getCat(item_name, category_ID, item_type) {
                     $.ajax({
                         type: "GET",
                         url: "/category/" + category_ID,
                         dataType: 'json',
                         success: function(cat_data) {
-                            //console.log(cat_data[0].name);
+                            //console.log(cat_data);
                             var category_name = cat_data[0].name;
 
                             var listDiv = document.getElementById("category-list-container");
                             listDiv.className += " list-group";
 
+                            // Decide between item types
+                            var type = ""
+                            if (item_type == 0) {
+                                type = "reuse";
+                            }
+                            else if (item_type == 1) {
+                                type = "repair";
+                            }
+                            else {
+                                type = "unknown"
+                            }
+
+
                             //the link
                             var link = document.createElement("a");
                             link.className = "list-group-item";
                             link.className += " list-item-title";
-                            link.setAttribute('href', "item.php?cat=" + category_name +"&item=" + item_name);
+                            link.setAttribute('href', "item.php?type=" + type + "&cat=" + category_name +"&item=" + item_name);
 
                             //the item name
                             var itemName = document.createTextNode(category_name + ": " + item_name);
@@ -107,9 +123,27 @@ function getCategories(search_term) {
         url: "/categorySearch/" + search_term,
         dataType: 'json',
         success: function (categories) {
+            console.log(categories);
             for (j = 0; j < categories.length; j++) {
                 var cat_name = categories[j].name;
+                var cat_type = categories[j].Type;
                 //console.log(cat_name);
+
+                // Decide what type string
+                var type = ""
+                var title_type = ""
+                if (cat_type == 0) {
+                    type = "reuse";
+                    title_type = "Reuse";
+                }
+                else if (cat_type == 1) {
+                    type = "repair";
+                    title_type = "Repair";
+                }
+                else {
+                    type = "unknown"
+                    title_type = "Unknown";
+                }
 
                 var listDiv = document.getElementById("category-list-container");
                 listDiv.className += " list-group";
@@ -118,10 +152,10 @@ function getCategories(search_term) {
                 var link = document.createElement("a");
                 link.className = "list-group-item";
                 link.className += " list-item-title";
-                link.setAttribute('href', "category.php?name=" + cat_name);
+                link.setAttribute('href', "category.php?type=" + type + "&name=" + cat_name);
 
                 //the item name
-                var catName = document.createTextNode(cat_name);
+                var catName = document.createTextNode(title_type + ": " + cat_name);
                 catName.className = "list-group-item-heading";
                 link.appendChild(catName);
 

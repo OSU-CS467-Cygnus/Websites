@@ -34,7 +34,8 @@ function addRepairLinks() {
 				var link = document.createElement("a");
 				var linkText = document.createTextNode(items[i].name);
 				link.appendChild(linkText);
-				link.setAttribute('href', "category.php?type=Repair%20Items&item=" + encodeURI(items[i].name));
+				//link.setAttribute('href', "item.php?cat=Repair%20Items&item=" + encodeURI(items[i].name));
+                                link.setAttribute('href', "category.php?type=repair&name=" + encodeURI(items[i].name));
 
 				dropDown.appendChild(link);
 			}
@@ -42,7 +43,8 @@ function addRepairLinks() {
 		}
 	};
 
-	var repairItemsURI = APIBase + "/item/category/name/Repair%20Items";
+	//var repairItemsURI = APIBase + "/item/category/name/Repair%20Items";
+        var repairItemsURI = APIBase + "/category/repairExclusive";
 
 	req.open("GET", repairItemsURI, true);
 	req.send();
@@ -64,7 +66,7 @@ function addReuseLinks() {
 				var link = document.createElement("a");
 				var linkText = document.createTextNode(items[i].name);
 				link.appendChild(linkText);
-				link.setAttribute('href', "category.php?name=" + encodeURI(items[i].name));
+				link.setAttribute('href', "category.php?type=reuse&name=" + encodeURI(items[i].name));
 
 				dropDown.appendChild(link);
 			}

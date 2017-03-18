@@ -59,7 +59,7 @@ $("#thisList").append("\
 
 
 // This code returns a list of items by category.
-// I haven't figured out how to correctly format yet to display checkboxes that can record items accepted
+// Haven't figured out how to correctly format yet to display checkboxes that can record items accepted
 ///*Get the list of categories and items in each category*/
 //$.ajax({
 //    type: "GET",
@@ -145,7 +145,7 @@ makeaddFunction = function(addButton){
 
         $.ajax({
             type: "POST",
-            url: "/RUapi/Business",
+            url: "/RUapi/business",
             data: payload,
             dataType: 'json',
             success: function(data) {

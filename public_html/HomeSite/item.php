@@ -47,8 +47,9 @@
 			function initItemMapWrapper() {
 				var cat = encodeURI("<?php if(isset($_REQUEST['cat'])) {echo $_REQUEST['cat'];}?>");
 				var item = encodeURI("<?php if(isset($_REQUEST['item'])) {echo $_REQUEST['item'];}?>");
+                                var type = encodeURI("<?php if(isset($_REQUEST['type'])) {echo $_REQUEST['type'];}?>");
 					
-				initItemMap(cat, item);
+				initItemMap(cat, item, type);
 		
 			}
 		</script>
@@ -60,7 +61,13 @@
 		<script>
 			var cat = encodeURI("<?php if(isset($_REQUEST['cat'])) {echo $_REQUEST['cat'];}?>");
 			var item = encodeURI("<?php if(isset($_REQUEST['item'])) {echo $_REQUEST['item'];}?>");
-			addBusinessList(cat, item);
+			var type = encodeURI("<?php if(isset($_REQUEST['type'])) {echo $_REQUEST['type'];}?>");
+            console.log("My category: " + cat);
+            console.log("My item: " + item);
+            console.log("My type: " + type);
+
+                        
+			addBusinessList(cat, item, type);
 		</script>
     </body>
 </html>
